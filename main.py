@@ -5,14 +5,14 @@ from basic_strategy import BasicStrategy
 
 
 class Card:
-    def __init__(self, suit, val):
+    def __init__(self, suit: str, val: int):
         self.suit = suit
         self.value = val
 
     def printValue(self):
-        if self.val >= 11:
+        if self.value >= 11:
             return 10
-        return int(self.val)
+        return self.value
 
     def show(self):
         print("{} of {}".format(self.value, self.suit))
@@ -45,14 +45,14 @@ class Deck:
 
 
 class BlackjackGame:
-    def __init__(self, decks):
+    def __init__(self, decks: int):
         self.deck = Deck()
         self.players = []
         self.dealer = Dealer()
         for x in range(0, decks):
             self.deck.build()
 
-    def addPlayer(self, player):
+    def addPlayer(self, player: BlackjackPlayer):
         self.players.append(player)
 
     def startHand(self):
@@ -70,8 +70,8 @@ class Dealer(BlackjackPlayer):
         return self.cards[0]
 
     def get_action(self):
-        for sum in self.possiblesums:
-            if sum >= 17 and sum <= 31:
+        for possibleSum in self.possiblesums:
+            if possibleSum >= 17 and possibleSum <= 31:
                 return Action.STAY
         return Action.HIT
 
