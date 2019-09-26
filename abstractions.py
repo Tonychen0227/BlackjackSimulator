@@ -58,6 +58,7 @@ class Deck:
     def reset(self):
         for drawnCard in self.drawn:
             self.cards.append(drawnCard)
+        self.shuffle()
 
 
 class BlackjackPlayer(ABC):
@@ -146,7 +147,6 @@ class Player(BlackjackPlayer, ABC):
             raise Exception("dead")
         print("Player {} Bankroll: {}".format(self.id, self.bankroll))
         self.wager = self.get_wager()
-        self.reset()
 
     def pay(self, result: Result):
         if result == Result.BLACKJACK:
@@ -164,3 +164,4 @@ class Player(BlackjackPlayer, ABC):
         else:
             self.push += 1
         self.record_wager(self.wager, result)
+        self.reset()

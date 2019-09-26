@@ -20,7 +20,7 @@ class BlackjackGame:
     def play_hand(self):
         secondary_players = {}
 
-        self.deck.shuffle()
+        self.deck.reset()
         self.dealer.reset()
 
         for player in self.players:
@@ -51,10 +51,12 @@ class BlackjackGame:
             if self.dealer.has_blackjack():
                 print("Loss: dealer blackjack")
                 player.pay(Result.LOSS)
+                continue
 
             if player.has_blackjack():
                 print("Win: player blackjack")
                 player.pay(Result.BLACKJACK)
+                continue
 
             action = None
             while not player.check_bust() and action != Action.DOUBLE:
@@ -74,9 +76,16 @@ class BlackjackGame:
                     secondary_player = copy.deepcopy(player)
                     secondary_player.bankroll = 0
                     dummy_array = []
-                    self.simulate_secondary(secondary_player, dummy_array, dealer_card)
+                    if player.cards[0].value == 1:
+                        #One card only, no blackjack
+                        secondary_player.cards = [player.cards[0]]
+                        secondary_player.draw(self.deck.draw())
+                        dummy_array.append(secondary_player)
+                    else:
+                        self.simulate_secondary(secondary_player, dummy_array, dealer_card)
                     secondary_players[player.id] = dummy_array
                     player.draw(self.deck.draw())
+                    break
                 elif action == Action.STAY:
                     break
                 elif action == Action.SURRENDER:
@@ -146,8 +155,6 @@ class BlackjackGame:
         player.draw(self.deck.draw())
         action = None
         while not player.check_bust() and action != Action.DOUBLE:
-            if player.wager * 2 > player.bankroll:
-                player.draw(Card("dummy", 0))
             action = player.get_strategy_action(dealer_card)
 
             if len(player.cards) == 1:
