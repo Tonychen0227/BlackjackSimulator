@@ -46,7 +46,6 @@ class BlackjackGame:
 
             while not player.check_bust():
                 action = player.get_strategy_action(dealer_card)
-                print("Player: ", player.id, "Your cards: ", player.print_cards(), "You chose: ", action)
                 if len(player.cards) == 1:
                     action = Action.HIT
 
@@ -124,7 +123,7 @@ class BlackjackGame:
         self.dealer.reset()
 
     def simulate_secondary(self, dummy_array, card: Card, wager: int, dealer_card: Card):
-        player = Player(0, wager)
+        player = BasicStrategyPlayer(0, wager)
         player.cards = [card]
         while not player.check_bust():
             action = player.get_strategy_action(dealer_card)
@@ -169,12 +168,13 @@ class Dealer(BlackjackPlayer):
         return Action.HIT
 
 
-class Player(BlackjackPlayer):
+class BasicStrategyPlayer(BlackjackPlayer):
     def __init__(self, bankroll: int, basewager: int):
         super().__init__()
         self.bankroll = bankroll
         self.basewager = basewager
         self.wager = basewager
+        self.id = "Basic Strategy"
         self.wins = 0
         self.push = 0
         self.surrender = 0
@@ -186,7 +186,68 @@ class Player(BlackjackPlayer):
         return Action.STAY
 
     def get_strategy_action(self, dealer_card: Card):
-        return BasicStrategy.get_action(self.cards, self.aces, dealer_card)
+        action = BasicStrategy.get_action(self.cards, self.aces, dealer_card)
+        print("Player: ", self.id, "Your cards: ", self.print_cards(), "You chose: ", action)
+        return action
+
+    def double_wager(self):
+        self.wager *= 2
+
+    def iterator_helper(self, x):
+        return str(x)
+
+    def print_status(self):
+        print(','.join(map(self.iterator_helper, [self.wins, self.push, self.surrender, self.losses, self.blackjacks])))
+
+    def pay(self, result: Result):
+        if result == Result.BLACKJACK:
+            self.bankroll += self.wager * 1.5
+            self.blackjacks += 1
+        elif result == Result.LOSS:
+            self.bankroll += self.wager * -1
+            self.losses += 1
+        elif result == Result.SURRENDER:
+            self.bankroll += self.wager * 0.5
+            self.surrender += 1
+        elif result == Result.WIN:
+            self.bankroll += self.wager
+            self.wins += 1
+        else:
+            self.push += 1
+
+        self.wager = self.basewager
+        self.reset()
+
+
+class YouPlayer(BlackjackPlayer):
+    def __init__(self, bankroll: int, basewager: int):
+        super().__init__()
+        self.bankroll = bankroll
+        self.basewager = basewager
+        self.wager = basewager
+        self.id = "You"
+        self.wins = 0
+        self.push = 0
+        self.surrender = 0
+        self.losses = 0
+        self.blackjacks = 0
+
+
+    def get_action(self):
+        return Action.STAY
+
+    def get_strategy_action(self, dealer_card: Card):
+        print("Player: ", self.id, "Your cards: ", self.print_cards())
+        action = int(input("Select an action. STAY = 0, SURRENDER = 1, HIT = 2, SPLIT = 3, DOUBLE DOWN = 4"))
+        returnDict = {
+            0: Action.STAY,
+            1: Action.SURRENDER,
+            2: Action.HIT,
+            3: Action.SPLIT,
+            4: Action.DOUBLE
+        }
+        print("You chose: ", returnDict[action])
+        return returnDict[action]
 
     def double_wager(self):
         self.wager *= 2
@@ -219,8 +280,10 @@ class Player(BlackjackPlayer):
 
 def main(decks, hands):
     game = BlackjackGame(decks)
-    player = Player(20, 1)
-    game.add_player(player)
+    player1 = YouPlayer(20, 1)
+    player2 = BasicStrategyPlayer(20, 1)
+    game.add_player(player1)
+    game.add_player(player2)
 
     for x in range(0, hands):
         game.play_hand()
