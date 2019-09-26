@@ -142,6 +142,8 @@ class Player(BlackjackPlayer, ABC):
         print("Wins: {}, Pushes: {}, Surrenders: {}, Losses: {}, Bankroll: {}".format(self.wins, self.push, self.surrender, self.losses, self.bankroll))
 
     def start_hand(self):
+        if self.bankroll <= 0:
+            raise Exception("dead")
         print("Player {} Bankroll: {}".format(self.id, self.bankroll))
         self.wager = self.get_wager()
         self.reset()

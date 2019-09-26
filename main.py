@@ -14,6 +14,9 @@ class BlackjackGame:
     def add_player(self, player: BlackjackPlayer):
         self.players.append(player)
 
+    def remove_player(self, player: BlackjackPlayer):
+        self.players.pop(self.players.index(player))
+
     def play_hand(self):
         secondary_players = {}
 
@@ -21,7 +24,13 @@ class BlackjackGame:
         self.dealer.reset()
 
         for player in self.players:
-            player.start_hand()
+            try:
+                player.start_hand()
+            except Exception:
+                self.remove_player(player)
+                print("Player: {} eliminated".format(player.id))
+                if len(self.players) == 0:
+                    raise Exception("No players remaining")
             player.draw(self.deck.draw())
 
         self.dealer.draw(self.deck.draw())
@@ -183,7 +192,7 @@ class BasicStrategyPlayer(Player):
         self.id = type
 
     def get_wager(self):
-        return self.basewager
+        return min(self.basewager, self.bankroll)
 
     def get_strategy_action(self, dealer_card: Card):
         action = BasicStrategy.get_action(self.cards, self.aces, dealer_card)
@@ -201,7 +210,7 @@ class ManualPlayer(Player):
     def get_wager(self):
         wager = 0
 
-        while wager <= 0:
+        while wager <= 0 or wager > self.bankroll:
             wager = int(input("Select your next wager. Must > 0: "))
 
         return wager
