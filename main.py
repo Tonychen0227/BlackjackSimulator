@@ -58,6 +58,8 @@ class BlackjackGame:
 
             action = None
             while not player.check_bust() and action != Action.DOUBLE:
+                if player.wager * 2 > player.bankroll:
+                    player.draw(Card("dummy", 0))
                 action = player.get_strategy_action(dealer_card)
                 if len(player.cards) == 1:
                     action = Action.HIT
@@ -144,6 +146,8 @@ class BlackjackGame:
         player.draw(self.deck.draw())
         action = None
         while not player.check_bust() and action != Action.DOUBLE:
+            if player.wager * 2 > player.bankroll:
+                player.draw(Card("dummy", 0))
             action = player.get_strategy_action(dealer_card)
 
             if len(player.cards) == 1:
@@ -202,6 +206,7 @@ class BasicStrategyPlayer(Player):
     def record_wager(self, wager: int, result: Result):
         pass
 
+
 class ManualPlayer(Player):
     def __init__(self, type: str, bankroll: int, basewager: int):
         super().__init__(bankroll, basewager)
@@ -247,9 +252,13 @@ class ManualPlayer(Player):
         if action == Action.SPLIT:
             if len(self.cards) > 2 or self.cards[0].value != self.cards[1].value:
                 return False
+            if self.bankroll < self.wager * 2:
+                return False
             return True
         elif action == Action.DOUBLE:
             if len(self.cards) > 2:
+                return False
+            if self.bankroll < self.wager * 2:
                 return False
             return True
         elif action == Action.STAY or action == Action.HIT or action == action.SURRENDER:
