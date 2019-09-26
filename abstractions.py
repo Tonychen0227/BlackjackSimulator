@@ -88,7 +88,7 @@ class BlackjackPlayer(ABC):
             temp += card.printValue()
 
         if temp <= 11 and self.aces >= 1:
-            temp += 11
+            temp += 10
 
         return temp
 
@@ -125,6 +125,10 @@ class Player(BlackjackPlayer, ABC):
         pass
 
     @abstractmethod
+    def record_wager(self, wager: int, result: Result):
+        pass
+
+    @abstractmethod
     def get_strategy_action(self, dealer_card: Card):
         pass
 
@@ -136,6 +140,11 @@ class Player(BlackjackPlayer, ABC):
 
     def print_status(self):
         print("Wins: {}, Pushes: {}, Surrenders: {}, Losses: {}, Bankroll: {}".format(self.wins, self.push, self.surrender, self.losses, self.bankroll))
+
+    def start_hand(self):
+        print("Player {} Bankroll: {}".format(self.id, self.bankroll))
+        self.wager = self.get_wager()
+        self.reset()
 
     def pay(self, result: Result):
         if result == Result.BLACKJACK:
@@ -152,6 +161,4 @@ class Player(BlackjackPlayer, ABC):
             self.wins += 1
         else:
             self.push += 1
-
-        self.wager = self.get_wager()
-        self.reset()
+        self.record_wager(self.wager, result)

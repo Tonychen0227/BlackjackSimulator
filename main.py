@@ -18,8 +18,10 @@ class BlackjackGame:
         secondary_players = {}
 
         self.deck.shuffle()
+        self.dealer.reset()
 
         for player in self.players:
+            player.start_hand()
             player.draw(self.deck.draw())
 
         self.dealer.draw(self.deck.draw())
@@ -82,26 +84,6 @@ class BlackjackGame:
         print("Dealer with final cards: " + self.dealer.print_cards())
 
         for player in self.players:
-            if len(player.cards) == 0:
-                continue
-            print("Player: {} with final cards: {}".format(player.id, player.print_cards()))
-            player_count = player.get_final_sum()
-            if player_count > 21:
-                print("You Bust: {} vs {}".format(player_count, dealer_count))
-                player.pay(Result.LOSS)
-            elif dealer_count > 21:
-                print("Dealer Bust: {} vs {}".format(player_count, dealer_count))
-                player.pay(Result.WIN)
-            elif player_count > dealer_count:
-                print("Win: {} vs {}".format(player_count, dealer_count))
-                player.pay(Result.WIN)
-            elif player_count == dealer_count:
-                print("Push: {} vs {}".format(player_count, dealer_count))
-                player.pay(Result.PUSH)
-            else:
-                print("Loss: {} vs {}".format(player_count, dealer_count))
-                player.pay(Result.LOSS)
-
             if player.id in secondary_players:
                 for secondary_player in secondary_players[player.id]:
                     if secondary_player.bankroll != 0:
@@ -126,8 +108,27 @@ class BlackjackGame:
                         secondary_player.pay(Result.LOSS)
 
                     player.bankroll += secondary_player.bankroll
-            print("Player {} Bankroll: {}".format(player.id, player.bankroll))
-        self.dealer.reset()
+
+            if len(player.cards) == 0:
+                continue
+
+            print("Player: {} with final cards: {}".format(player.id, player.print_cards()))
+            player_count = player.get_final_sum()
+            if player_count > 21:
+                print("You Bust: {} vs {}".format(player_count, dealer_count))
+                player.pay(Result.LOSS)
+            elif dealer_count > 21:
+                print("Dealer Bust: {} vs {}".format(player_count, dealer_count))
+                player.pay(Result.WIN)
+            elif player_count > dealer_count:
+                print("Win: {} vs {}".format(player_count, dealer_count))
+                player.pay(Result.WIN)
+            elif player_count == dealer_count:
+                print("Push: {} vs {}".format(player_count, dealer_count))
+                player.pay(Result.PUSH)
+            else:
+                print("Loss: {} vs {}".format(player_count, dealer_count))
+                player.pay(Result.LOSS)
 
     def simulate_secondary(self, player: Player, dummy_array, dealer_card: Card):
         player.id = "Secondary"
@@ -189,6 +190,8 @@ class BasicStrategyPlayer(Player):
         print("Player: {} with cards: {} chose: {}".format(self.id, self.print_cards(), action))
         return action
 
+    def record_wager(self, wager: int, result: Result):
+        pass
 
 class ManualPlayer(Player):
     def __init__(self, type: str, bankroll: int, basewager: int):
@@ -199,7 +202,7 @@ class ManualPlayer(Player):
         wager = 0
 
         while wager <= 0:
-            int(input("Select your next wager. Must > 0: "))
+            wager = int(input("Select your next wager. Must > 0: "))
 
         return wager
 
@@ -222,6 +225,8 @@ class ManualPlayer(Player):
                 action = return_dict[action_int]
             except KeyError:
                 action = None
+
+        print("Basic Strategy Suggested Action: ", BasicStrategy.get_action(self.cards, self.aces, dealer_card))
         print("You chose: ", return_dict[action_int])
 
         return action
@@ -242,6 +247,8 @@ class ManualPlayer(Player):
             return True
         return False
 
+    def record_wager(self, wager: int, result: Result):
+        pass
 
 def main():
     hands = int(input("How many hands do you want to play? "))
