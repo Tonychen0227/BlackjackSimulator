@@ -84,7 +84,7 @@ class BasicStrategy:
                     if player_number_cards == 2:
                         return Action.DOUBLE
                     else:
-                        return Action.HIT
+                        return Action.STAY
                 elif 7 <= dealer_value <= 8:
                     return Action.STAY
                 else:
@@ -94,9 +94,9 @@ class BasicStrategy:
                     if player_number_cards == 2:
                         return Action.DOUBLE
                     else:
-                        return Action.HIT
+                        return Action.STAY
                 else:
-                    return Action.HIT
+                    return Action.STAY
             else:
                 return Action.STAY
 

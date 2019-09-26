@@ -77,7 +77,7 @@ class BlackjackPlayer(ABC):
         self.aces = 0
 
     def check_bust(self):
-        return self.get_final_sum() - self.aces * 10 > 21
+        return self.get_final_sum() > 21
 
     def has_blackjack(self):
         return self.aces == 1 and self.get_final_sum() == 21
