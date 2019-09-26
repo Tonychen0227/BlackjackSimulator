@@ -63,6 +63,31 @@ class BlackjackGame:
             player.reset()
 
         self.dealer.draw(self.deck.draw())
+        for player in self.players:
+            player.draw(self.deck.draw())
+
+        self.dealer.draw(self.deck.draw())
+        for player in self.players:
+            if player.has_blackjack() and not self.dealer.has_blackjack():
+                player.pay(0)
+                player.reset()
+                continue
+
+            while not player.check_bust():
+                action = player.get_action()
+                if action == Action.HIT:
+                    player.draw(self.deck.draw())
+                elif action == Action.DOUBLE:
+                    player.draw(self.deck.draw())
+                    player.double_wager()
+                elif action == Action.SPLIT:
+                    pass
+                elif action == Action.STAY:
+                    continue
+                elif action == Action.SURRENDER:
+                    player.pay(0)
+                    player.reset()
+                    continue
 
 
 class Dealer(BlackjackPlayer):
@@ -77,8 +102,22 @@ class Dealer(BlackjackPlayer):
 
 
 class Player(BlackjackPlayer):
+    def __init__(self, bankroll: int):
+        self.bankroll = bankroll
+        self.wager = 0
+
     def get_action(self):
-        return BasicStrategy.get_action([], 0, Card(0, "suit"))
+        return Action.STAY
+
+    def get_strategy_action(self, dealer_card: Card):
+        return BasicStrategy.get_action(self.cards, self.aces, dealer_card)
+
+    def double_wager(self):
+        self.wager *= 2
+
+    def pay(self, amount: int):
+        self.bankroll += 0
+        self.reset()
 
 
 def main(decks, hands):
