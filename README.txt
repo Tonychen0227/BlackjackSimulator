@@ -1,12 +1,11 @@
-BlackjackSim README
-==================
+<h1> BLACKJACK SIMULATOR</h1>
 
-Getting Started
----------------
+<h3> This is just a (FREE!) way to play BlackJack. </h3>
 
-- cd <directory containing this file>
+To run, simply <strong> python main.py </strong> in the project directory and follow prompts.
 
-- $VENV/bin/pip install -e .
+Currently supporting a manual player and an automated basic strategy player.
 
-- $VENV/bin/pserve development.ini
+Future plan is to add betting schemes, such as martingale, labouchere, and positive incrementing methods.
 
+Card counting is NOT viable as this is a CSM game (as most casinoes are, these days).
