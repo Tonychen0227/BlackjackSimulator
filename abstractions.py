@@ -116,10 +116,15 @@ class Player(BlackjackPlayer, ABC):
         self.losses = 0
         self.blackjacks = 0
 
+    def try_bet(self, bet: int):
+        if self.bankroll - bet < 0:
+            return False
+        else:
+            self.bankroll -= bet
+            return True
 
     def get_action(self):
         pass
-
 
     @abstractmethod
     def get_wager(self):
@@ -147,21 +152,22 @@ class Player(BlackjackPlayer, ABC):
             raise Exception("dead")
         print("Player {} Bankroll: {}".format(self.id, self.bankroll))
         self.wager = self.get_wager()
+        self.bankroll -= self.wager
 
     def pay(self, result: Result):
         if result == Result.BLACKJACK:
-            self.bankroll += self.wager * 1.5
+            self.bankroll += self.wager * 2.5
             self.blackjacks += 1
         elif result == Result.LOSS:
-            self.bankroll += self.wager * -1
             self.losses += 1
         elif result == Result.SURRENDER:
             self.bankroll += self.wager * 0.5
             self.surrender += 1
         elif result == Result.WIN:
-            self.bankroll += self.wager
+            self.bankroll += self.wager * 2
             self.wins += 1
         else:
+            self.bankroll += self.wager * 1
             self.push += 1
         self.record_wager(self.wager, result)
         self.reset()

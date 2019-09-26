@@ -59,9 +59,7 @@ class BlackjackGame:
                 continue
 
             action = None
-            while not player.check_bust() and action != Action.DOUBLE:
-                if player.wager * 2 > player.bankroll:
-                    player.draw(Card("dummy", 0))
+            while not player.check_bust():
                 action = player.get_strategy_action(dealer_card)
                 if len(player.cards) == 1:
                     action = Action.HIT
@@ -69,23 +67,33 @@ class BlackjackGame:
                 if action == Action.HIT:
                     player.draw(self.deck.draw())
                 elif action == Action.DOUBLE:
-                    player.draw(self.deck.draw())
-                    player.double_wager()
-                elif action == Action.SPLIT:
-                    player.cards = [player.cards[0]]
-                    secondary_player = copy.deepcopy(player)
-                    secondary_player.bankroll = 0
-                    dummy_array = []
-                    if player.cards[0].value == 1:
-                        #One card only, no blackjack
-                        secondary_player.cards = [player.cards[0]]
-                        secondary_player.draw(self.deck.draw())
-                        dummy_array.append(secondary_player)
+                    if not player.try_bet(player.wager):
+                        player.cards.append(Card("dummy", 0))
                     else:
-                        self.simulate_secondary(secondary_player, dummy_array, dealer_card)
-                    secondary_players[player.id] = dummy_array
-                    player.draw(self.deck.draw())
-                    break
+                        player.draw(self.deck.draw())
+                        player.double_wager()
+                        break
+                elif action == Action.SPLIT:
+                    if not player.try_bet(player.wager):
+                        player.cards.append(Card("dummy", 0))
+                    else:
+                        player.draw(self.deck.draw())
+                        player.cards = [player.cards[0]]
+                        secondary_player = copy.deepcopy(player)
+                        secondary_player.bankroll = 0
+                        dummy_array = []
+                        if player.cards[0].value == 1:
+                            #One card only, no blackjack
+                            secondary_player.cards = [player.cards[0]]
+                            secondary_player.draw(self.deck.draw())
+                            dummy_array.append(secondary_player)
+                            secondary_players[player.id] = dummy_array
+                            player.draw(self.deck.draw())
+                            break
+                        else:
+                            self.simulate_secondary(player, secondary_player, dummy_array, dealer_card)
+                        secondary_players[player.id] = dummy_array
+                        player.draw(self.deck.draw())
                 elif action == Action.STAY:
                     break
                 elif action == Action.SURRENDER:
@@ -109,7 +117,7 @@ class BlackjackGame:
                     if secondary_player.bankroll != 0:
                         player.bankroll += secondary_player.bankroll
                         continue
-                    print("Split player: {} with final cards: {}".format(player.id, player.print_cards()))
+                    print("Split player: {} with final cards: {}".format(player.id, secondary_player.print_cards()))
                     value = secondary_player.get_final_sum()
                     if value > 21:
                         print("(SPLIT HAND) You Bust: {} vs {}".format(value, dealer_count))
@@ -150,11 +158,10 @@ class BlackjackGame:
                 print("Loss: {} vs {}".format(player_count, dealer_count))
                 player.pay(Result.LOSS)
 
-    def simulate_secondary(self, player: Player, dummy_array, dealer_card: Card):
+    def simulate_secondary(self, primary_player: Player, player: Player, dummy_array, dealer_card: Card):
         player.id = "Secondary"
         player.draw(self.deck.draw())
-        action = None
-        while not player.check_bust() and action != Action.DOUBLE:
+        while not player.check_bust():
             action = player.get_strategy_action(dealer_card)
 
             if len(player.cards) == 1:
@@ -163,11 +170,28 @@ class BlackjackGame:
             if action == Action.HIT:
                 player.draw(self.deck.draw())
             elif action == Action.DOUBLE:
-                player.draw(self.deck.draw())
-                player.double_wager()
+                if not primary_player.try_bet(player.wager):
+                    player.cards.append(Card("dummy", 0))
+                else:
+                    player.draw(self.deck.draw())
+                    player.double_wager()
+                    break
             elif action == Action.SPLIT:
-                player.cards = [player.cards[0]]
-                self.simulate_secondary(dummy_array, player.cards[0], player.wager, dealer_card)
+                if not primary_player.try_bet(player.wager):
+                    player.cards.append(Card("dummy", 0))
+                else:
+                    player.draw(self.deck.draw())
+                    player.cards = [player.cards[0]]
+                    secondary_player = copy.deepcopy(player)
+                    secondary_player.bankroll = 0
+                    if player.cards[0].value == 1:
+                        # One card only, no blackjack
+                        secondary_player.cards = [player.cards[0]]
+                        secondary_player.draw(self.deck.draw())
+                        dummy_array.append(secondary_player)
+                    else:
+                        self.simulate_secondary(primary_player, secondary_player, dummy_array, dealer_card)
+                    player.draw(self.deck.draw())
             elif action == Action.STAY:
                 break
             elif action == Action.SURRENDER:
