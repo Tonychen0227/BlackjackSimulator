@@ -1,6 +1,6 @@
-<h1> BLACKJACK SIMULATOR</h1>
+# BLACKJACK SIMULATOR
 
-<h3> This is just a (FREE!) way to play BlackJack. </h3>
+### This is just a (FREE!) way to play BlackJack. 
 
 To run, simply <strong> python main.py </strong> in the project directory and follow prompts.
 
