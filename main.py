@@ -81,7 +81,10 @@ class BlackjackGame:
                         player.cards = [player.cards[0]]
                         secondary_player = copy.deepcopy(player)
                         secondary_player.bankroll = 0
-                        dummy_array = []
+                        if player.id in secondary_players:
+                            dummy_array = secondary_players[player.id]
+                        else:
+                            dummy_array = []
                         if player.cards[0].value == 1:
                             #One card only, no blackjack
                             secondary_player.cards = [player.cards[0]]
