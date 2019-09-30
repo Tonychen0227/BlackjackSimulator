@@ -222,9 +222,9 @@ class Dealer(BlackjackPlayer):
         return action
 
 
-class BasicStrategyPlayer(Player):
+class BasicStrategyNaivePlayer(Player):
     def __init__(self, bankroll: int, basewager: int):
-        super().__init__("automatic basic strategy", bankroll, basewager)
+        super().__init__("Basic Strategy Naive", bankroll, basewager)
 
     def get_wager(self):
         return min(self.basewager, self.bankroll)
@@ -236,6 +236,50 @@ class BasicStrategyPlayer(Player):
 
     def record_wager(self, wager: int, result: Result):
         pass
+
+
+class BasicStrategyLaboucherePlayer(Player):
+    def __init__(self, bankroll: int, basewager: int):
+        super().__init__("Basic Strategy Labouchere", bankroll, basewager)
+        self.bet_array = []
+        self.generate_array(basewager, 10)
+
+    def get_wager(self):
+        if len(self.bet_array) == 1:
+            wager = self.bet_array[0]
+        else:
+            wager = self.bet_array[1] + self.bet_array[-1]
+
+        return min(wager, self.bankroll)
+
+    def get_strategy_action(self, dealer_card: Card):
+        action = BasicStrategy.get_action(self.cards, self.aces, dealer_card)
+        print("Player: {} with cards: {} chose: {}".format(self.id, self.print_cards(), action))
+        return action
+
+    def record_wager(self, wager: int, result: Result):
+        if result == Result.BLACKJACK or result == Result.WIN:
+            if len(self.bet_array) == 1 or len(self.bet_array) == 2:
+                self.generate_array(self.basewager, 10)
+            else:
+                self.bet_array = self.bet_array[1:-1]
+        elif result == Result.LOSS or result == Result.SURRENDER:
+            self.bet_array.append(wager)
+        
+            if sum(self.bet_array) / len(self.bet_array) > self.basewager * 5:
+                self.generate_array(self.basewager, int(sum(self.bet_array)/self.basewager))
+            else:
+                if wager > self.basewager * 5:
+                    self.bet_array = self.bet_array[0:-1]
+                    self.bet_array.append(wager // 2)
+                    self.bet_array.append(wager // 2)
+                
+        print(self.bet_array)
+
+    def generate_array(self, amount, count):
+        self.bet_array = []
+        for x in range(1, count):
+            self.bet_array.append(amount)
 
 
 class ManualPlayer(Player):
@@ -312,11 +356,13 @@ def main():
         game.add_player(ManualPlayer(name, starting_bank, starting_wager))
         want_manual = int(input("Do you want to add another manual player? 1 for yes, 0 for no: "))
 
-
     want_automatic = int(input("Do you want to add a automatic basic strategy player? 1 for yes, 0 for no: "))
-    while want_automatic == 1:
-        game.add_player(BasicStrategyPlayer(starting_bank, starting_wager))
-        want_automatic = int(input("Do you want to add another automatic basic strategy player? 1 for yes, 0 for no: "))
+    if want_automatic == 1:
+        game.add_player(BasicStrategyNaivePlayer(starting_bank, starting_wager))
+
+    want_labouchere = int(input("Do you want to add a automatic basic strategy labouchere player? 1 for yes, 0 for no: "))
+    if want_labouchere == 1:
+        game.add_player(BasicStrategyLaboucherePlayer(starting_bank, starting_wager))
 
     for x in range(0, hands):
         game.play_hand()

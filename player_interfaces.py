@@ -87,7 +87,7 @@ class Player(BlackjackPlayer, ABC):
         return str(x)
 
     def print_status(self):
-        print("Blackjack Wins: {}, Wins: {}, Pushes: {}, Surrenders: {}, Losses: {}, Bankroll: {}".format(self.blackjacks
+        print("Player: {} Blackjack Wins: {}, Wins: {}, Pushes: {}, Surrenders: {}, Losses: {}, Bankroll: {}".format(self.id, self.blackjacks
                                                       , self.wins, self.push, self.surrender, self.losses, self.bankroll))
 
     def start_hand(self):

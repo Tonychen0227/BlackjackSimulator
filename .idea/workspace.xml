@@ -4,6 +4,7 @@
     <list default="true" id="0c3d5f9d-cee7-463f-948c-7fd3aa26e092" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/player_interfaces.py" beforeDir="false" afterPath="$PROJECT_DIR$/player_interfaces.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -103,7 +104,8 @@
       <workItem from="1569524588764" duration="4716000" />
       <workItem from="1569555144544" duration="2412000" />
       <workItem from="1569608761277" duration="1666000" />
-      <workItem from="1569876442701" duration="358000" />
+      <workItem from="1569876442701" duration="1685000" />
+      <workItem from="1569878241260" duration="64000" />
     </task>
     <servers />
   </component>
@@ -140,11 +142,6 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>257</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
           <line>138</line>
