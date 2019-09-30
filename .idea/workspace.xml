@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0c3d5f9d-cee7-463f-948c-7fd3aa26e092" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/BlackjackSim.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/BlackjackSim.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deck_stuff.py" beforeDir="false" afterPath="$PROJECT_DIR$/deck_stuff.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -106,6 +103,7 @@
       <workItem from="1569524588764" duration="4716000" />
       <workItem from="1569555144544" duration="2412000" />
       <workItem from="1569608761277" duration="1666000" />
+      <workItem from="1569876442701" duration="358000" />
     </task>
     <servers />
   </component>
@@ -144,12 +142,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>256</line>
+          <line>257</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>137</line>
+          <line>138</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>

@@ -36,6 +36,7 @@ class BlackjackGame:
                 print("Player: {} eliminated".format(player.id))
                 if len(self.players) == 0:
                     raise Exception("No players remaining")
+            continue
             player.draw(self.deck.draw())
 
         self.dealer.draw(self.deck.draw())
@@ -311,9 +312,11 @@ def main():
         game.add_player(ManualPlayer(name, starting_bank, starting_wager))
         want_manual = int(input("Do you want to add another manual player? 1 for yes, 0 for no: "))
 
+
     want_automatic = int(input("Do you want to add a automatic basic strategy player? 1 for yes, 0 for no: "))
-    if want_automatic == 1:
+    while want_automatic == 1:
         game.add_player(BasicStrategyPlayer(starting_bank, starting_wager))
+        want_automatic = int(input("Do you want to add another automatic basic strategy player? 1 for yes, 0 for no: "))
 
     for x in range(0, hands):
         game.play_hand()
