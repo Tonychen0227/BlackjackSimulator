@@ -24,6 +24,8 @@ class BlackjackGame:
         secondary_players = {}
 
         self.deck.reset()
+        if not self.deck.check_integrity():
+            raise Exception("Deck has been compromised")
         self.dealer.reset()
 
         for player in self.players:

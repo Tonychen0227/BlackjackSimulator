@@ -1,4 +1,5 @@
 import random
+import copy
 
 
 class Card:
@@ -30,6 +31,7 @@ class Card:
 class Deck:
     def __init__(self):
         self.cards = []
+        self.pending_shuffle = []
         self.drawn = []
         self.build()
 
@@ -49,7 +51,26 @@ class Deck:
         return popped
 
     def reset(self):
-        for drawnCard in self.drawn:
-            self.cards.append(drawnCard)
+        for toShuffle in self.pending_shuffle:
+            self.cards.append(toShuffle)
+        self.pending_shuffle = copy.deepcopy(self.drawn)
+        self.drawn = []
         self.shuffle()
 
+    def check_integrity(self):
+        cards = {}
+        for card in self.cards:
+            if card.show() not in cards:
+                cards[card.show()] = 0
+            cards[card.show()] += 1
+        for card in self.pending_shuffle:
+            if card.show() not in cards:
+                cards[card.show()] = 0
+            cards[card.show()] += 1
+        base_count = None
+        for key in cards:
+            if base_count == None:
+                base_count = cards[key]
+            elif cards[key] != base_count:
+                return False
+        return True
