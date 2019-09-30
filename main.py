@@ -282,6 +282,53 @@ class BasicStrategyLaboucherePlayer(Player):
             self.bet_array.append(amount)
 
 
+class BasicStrategyFibonacciPositivePlayer(Player):
+    def __init__(self, bankroll: int, basewager: int):
+        super().__init__("Basic Strategy Fibonacci", bankroll, basewager)
+        self.one = 0
+        self.two = 0
+
+    def get_wager(self):
+        if self.one + self.two == 0:
+            return self.basewager
+
+        return min(self.one + self.two, self.bankroll)
+
+    def get_strategy_action(self, dealer_card: Card):
+        action = BasicStrategy.get_action(self.cards, self.aces, dealer_card)
+        print("Player: {} with cards: {} chose: {}".format(self.id, self.print_cards(), action))
+        return action
+
+    def record_wager(self, wager: int, result: Result):
+        if result == Result.BLACKJACK or result == Result.WIN:
+            self.one = copy.deepcopy(self.two)
+            self.two = copy.deepcopy(wager)
+        elif result == Result.LOSS or result == Result.SURRENDER:
+            self.one = 0
+            self.two = 0
+
+
+class BasicStrategyMartingalePlayer(Player):
+    def __init__(self, bankroll: int, basewager: int):
+        super().__init__("Basic Strategy Fibonacci", bankroll, basewager)
+        self.wager = copy.deepcopy(basewager)
+
+    def get_wager(self):
+        return min(self.wager, self.bankroll)
+
+    def get_strategy_action(self, dealer_card: Card):
+        action = BasicStrategy.get_action(self.cards, self.aces, dealer_card)
+        print("Player: {} with cards: {} chose: {}".format(self.id, self.print_cards(), action))
+        return action
+
+    def record_wager(self, wager: int, result: Result):
+        if result == Result.BLACKJACK or result == Result.WIN:
+            self.wager = copy.deepcopy(self.basewager)
+
+        elif result == Result.LOSS or result == Result.SURRENDER:
+            self.wager = self.wager * 2
+
+
 class ManualPlayer(Player):
     def __init__(self, id: str, bankroll: int, basewager: int):
         super().__init__(id, bankroll, basewager)
@@ -360,9 +407,17 @@ def main():
     if want_automatic == 1:
         game.add_player(BasicStrategyNaivePlayer(starting_bank, starting_wager))
 
+    want_martingale = int(input("Do you want to add a automatic basic strategy martingale player? 1 for yes, 0 for no: "))
+    if want_martingale == 1:
+        game.add_player(BasicStrategyMartingalePlayer(starting_bank, starting_wager))
+
     want_labouchere = int(input("Do you want to add a automatic basic strategy labouchere player? 1 for yes, 0 for no: "))
     if want_labouchere == 1:
         game.add_player(BasicStrategyLaboucherePlayer(starting_bank, starting_wager))
+
+    want_fibonacci = int(input("Do you want to add a automatic basic strategy fibonacci player? 1 for yes, 0 for no: "))
+    if want_fibonacci == 1:
+        game.add_player(BasicStrategyFibonacciPositivePlayer(starting_bank, starting_wager))
 
     for x in range(0, hands):
         game.play_hand()
